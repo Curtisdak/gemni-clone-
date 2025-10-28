@@ -44,8 +44,8 @@ export function Header({
           type="button"
           onClick={onToggleSidebar}
           className={cn(
-            "inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400",
-            sidebarOpen ? "bg-slate-100" : "bg-white",
+            "inline-flex h-9 w-9 cursor-pointer items-center border-0 justify-center rounded-full  border-slate-200 text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400",
+            sidebarOpen ? "bg-slate-100" : "",
           )}
           aria-label={sidebarOpen ? "Hide sidebar" : "Show sidebar"}
         >
@@ -60,7 +60,7 @@ export function Header({
 
         <Link
           href="/"
-          className="text-sm font-semibold   text-slate-600 dark:text-slate-200"
+          className="text-md font-bold  text-slate-600 dark:text-slate-200"
         >
           Curt AI
         </Link>

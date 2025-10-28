@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useUserSession } from "@/hooks/use-user-session";
-import { ArrowDown, Loader2, Mic, Paperclip, Send, Sparkles } from "lucide-react";
+import { ArrowDown, Check, Copy, Loader2, Mic, Paperclip, Send, Share2, Sparkles } from "lucide-react";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
@@ -38,7 +38,7 @@ export default function ChatPage() {
     () => [
       "Summarize the latest AI news in two paragraphs.",
       "Give me a five-day meal plan that is high in protein.",
-      "Explain React server components like I'm new to web dev.",
+      "Ask Curt AI religious questions like who is Jesus Christ.",
       "Brainstorm a catchy tagline for a productivity app.",
     ],
     [],
@@ -228,6 +228,7 @@ export default function ChatPage() {
       const userMsg: Msg = { role: "user", content: prompt };
       const history = [...messages, userMsg];
       setMessages([...history, { role: "assistant", content: "" }]);
+      requestAnimationFrame(() => scrollToBottom("smooth"));
       if (!promptOverride) {
         setInput("");
       } else {
@@ -359,10 +360,10 @@ export default function ChatPage() {
               <div className="space-y-4">
                 <span className="inline-flex items-center gap-2 rounded-full bg-muted px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-muted-foreground">
                   <Sparkles className="h-4 w-4" />
-                  Curtis Gemini
+                  Curtis AI
                 </span>
                 <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-                  Ask anything, explore bold ideas, get tailored help.
+                  Ask anything, explore bold ideas, get tailored help by Curt AI.
                 </h1>
                 <p className="mx-auto max-w-xl text-sm text-muted-foreground">
                   Start with a suggestion below or describe what you need. Your conversation
@@ -422,7 +423,7 @@ export default function ChatPage() {
         <div ref={composerRef} className="pointer-events-auto w-full max-w-3xl">
           <motion.form
             onSubmit={handleSubmit}
-            initial={{ y: 12, opacity: 0 }}
+            initial={{ y: 12, opacity: 0 }} 
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.2 }}
             className="rounded-3xl border border-border/60 bg-card/95 p-4 shadow-2xl backdrop-blur"
@@ -486,6 +487,107 @@ function MessageBubble({
   loading?: boolean;
 }) {
   const isAssistant = role === "assistant";
+  const rawText =
+    typeof children === "string"
+      ? children
+      : Array.isArray(children)
+        ? children
+            .filter((child): child is string => typeof child === "string")
+            .join("")
+        : "";
+  const [typedContent, setTypedContent] = useState(rawText);
+  const [copied, setCopied] = useState(false);
+  const [shared, setShared] = useState(false);
+  const copyTimeoutRef = useRef<number | null>(null);
+  const shareTimeoutRef = useRef<number | null>(null);
+
+  const isStreamingAssistant = isAssistant && Boolean(loading);
+
+  useEffect(() => {
+    if (!isAssistant) {
+      setTypedContent(rawText);
+      return;
+    }
+
+    if (isStreamingAssistant || !rawText) {
+      setTypedContent(rawText);
+      return;
+    }
+
+    let frame: number | undefined;
+    let index = 0;
+    setTypedContent("");
+
+    const type = () => {
+      index += 1;
+      setTypedContent(rawText.slice(0, index));
+      if (index < rawText.length) {
+        frame = window.setTimeout(type, 16);
+      }
+    };
+
+    frame = window.setTimeout(type, 16);
+
+    return () => {
+      if (frame) {
+        window.clearTimeout(frame);
+      }
+    };
+  }, [isAssistant, isStreamingAssistant, rawText]);
+
+  useEffect(() => {
+    return () => {
+      if (copyTimeoutRef.current) {
+        window.clearTimeout(copyTimeoutRef.current);
+      }
+      if (shareTimeoutRef.current) {
+        window.clearTimeout(shareTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const handleCopy = useCallback(async () => {
+    if (!rawText || typeof navigator === "undefined") return;
+
+    try {
+      await navigator.clipboard.writeText(rawText);
+      setCopied(true);
+      if (copyTimeoutRef.current) {
+        window.clearTimeout(copyTimeoutRef.current);
+      }
+      copyTimeoutRef.current = window.setTimeout(() => setCopied(false), 2000);
+    } catch (error) {
+      console.error("Unable to copy response", error);
+    }
+  }, [rawText]);
+
+  const handleShare = useCallback(async () => {
+    if (!rawText || typeof navigator === "undefined") return;
+
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: "Curtis Gemini response",
+          text: rawText,
+        });
+      } else {
+        await navigator.clipboard.writeText(rawText);
+      }
+
+      setShared(true);
+      if (shareTimeoutRef.current) {
+        window.clearTimeout(shareTimeoutRef.current);
+      }
+      shareTimeoutRef.current = window.setTimeout(() => setShared(false), 2000);
+    } catch (error) {
+      console.error("Unable to share response", error);
+    }
+  }, [rawText]);
+
+  const bubbleClasses = cn(
+    "max-w-[80%] whitespace-pre-wrap rounded-3xl px-5 py-4 text-sm leading-relaxed shadow-sm transition",
+    isAssistant ? "bg-card/90 text-foreground ring-1 ring-border" : "bg-primary text-primary-foreground",
+  );
 
   return (
     <motion.div
@@ -500,21 +602,49 @@ function MessageBubble({
         </div>
       )}
 
-      <div
-        className={cn(
-          "max-w-[80%] whitespace-pre-wrap rounded-3xl px-5 py-4 text-sm leading-relaxed shadow-sm transition",
-          isAssistant
-            ? "bg-card/90 text-foreground ring-1 ring-border"
-            : "bg-primary text-primary-foreground",
-        )}
-      >
-        {children}
-        {loading && (
-          <span className="ml-1 inline-block animate-pulse text-base leading-none opacity-70">
-            ...
-          </span>
-        )}
-      </div>
+      {isAssistant ? (
+        <div className="relative group">
+          <div className={bubbleClasses}>
+            {typedContent}
+            {loading && (
+              <span className="ml-1 inline-block animate-pulse text-base leading-none opacity-70">
+                ...
+              </span>
+            )}
+          </div>
+          {rawText && (
+            <div className="absolute -top-4 right-1 flex items-center gap-1 rounded-full bg-card/90 px-1.5 py-1 opacity-0 shadow-sm ring-1 ring-border/70 transition group-hover:opacity-100 group-focus-within:opacity-100">
+              <button
+                type="button"
+                onClick={handleCopy}
+                disabled={isStreamingAssistant || !rawText}
+                className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-muted/60 text-muted-foreground transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
+                aria-label="Copy response"
+              >
+                {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+              </button>
+              <button
+                type="button"
+                onClick={handleShare}
+                disabled={isStreamingAssistant || !rawText}
+                className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-muted/60 text-muted-foreground transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
+                aria-label="Share response"
+              >
+                {shared ? <Check className="h-4 w-4" /> : <Share2 className="h-4 w-4" />}
+              </button>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className={bubbleClasses}>
+          {children}
+          {loading && (
+            <span className="ml-1 inline-block animate-pulse text-base leading-none opacity-70">
+              ...
+            </span>
+          )}
+        </div>
+      )}
 
       {!isAssistant && (
         <div className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-semibold text-muted-foreground">
