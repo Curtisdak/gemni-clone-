@@ -96,7 +96,7 @@ export default function Home() {
             <Bot className="h-5 w-5 text-sky-500 dark:text-sky-300" />
           </div>
           <span className="text-sm font-semibold uppercase tracking-[0.35em] text-slate-600 dark:text-slate-200">
-            Curtis Gemini
+            Curt AI
           </span>
         </motion.div>
 
@@ -150,8 +150,8 @@ export default function Home() {
             asChild
             className="bg-sky-500 text-sm font-semibold text-slate-900 hover:bg-sky-400"
           >
-            <Link href="/signup">
-              Get started <ArrowRight className="ml-2 h-4 w-4" />
+            <Link href="/chat">
+              Start a chat <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>
         </motion.div>
@@ -174,7 +174,7 @@ export default function Home() {
               Where ambitious teams prototype the future in minutes.
             </h1>
             <p className="max-w-xl text-lg text-slate-600 dark:text-slate-300">
-              Curtis Gemini blends multimodal reasoning, memory, and real-time
+              Curt AI blends multimodal reasoning, memory, and real-time
               collaboration so you can sketch, iterate, and deliver ideas that
               feel handcrafted for your audience without leaving the canvas.
             </p>
@@ -184,7 +184,7 @@ export default function Home() {
                 className="h-12 gap-2 rounded-full bg-white text-base font-semibold text-slate-900 hover:bg-slate-200"
               >
                 <Link href="/chat">
-                  Launch Curtis Gemini
+                  Launch Curt AI
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
@@ -266,7 +266,7 @@ export default function Home() {
                 Designed for teams who expect more than generic answers.
               </h2>
               <p className="mt-3 max-w-md text-sm text-slate-600 md:text-right md:leading-relaxed dark:text-slate-300">
-                Curtis Gemini unifies language, image, and code generation,
+                Curt AI unifies language, image, and code generation,
                 tuned to reflect your brand voice and data privacy standards.
               </p>
             </div>
@@ -315,7 +315,7 @@ export default function Home() {
             </h2>
             <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300">
               Mix conversational prompts, structured command palettes, and
-              embedded assets. Curtis Gemini adapts to your flow, not the other
+              embedded assets. Curt AI adapts to your flow, not the other
               way around.
             </p>
             <Button
@@ -323,7 +323,7 @@ export default function Home() {
               className="mt-6 w-fit rounded-full bg-slate-900 text-sm text-white hover:bg-slate-700 dark:bg-white/10 dark:hover:bg-white/20"
             >
               <Link href="/signup">
-                Try the Curtis Gemini workspace
+                Try the Curt AI workspace
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
@@ -434,7 +434,7 @@ export default function Home() {
               Ready to co-create with a tireless partner?
             </h2>
             <p className="max-w-xl text-sm leading-relaxed text-slate-600 dark:text-slate-300">
-              Curtis Gemini is free for individuals getting started. Scale with
+              Curt AI is free for individuals getting started. Scale with
               advanced compliance, granular analytics, and team orchestration as
               you grow.
             </p>
@@ -463,7 +463,7 @@ export default function Home() {
         <div className="mx-auto flex w-full max-w-6xl flex-col items-center justify-between gap-6 px-6 py-10 text-sm text-slate-600 md:flex-row dark:text-slate-400">
           <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400">
             <Wand2 className="h-4 w-4" />
-            <span>Copyright {new Date().getFullYear()} Curtis Gemini Labs</span>
+            <span>Copyright {new Date().getFullYear()} Curt AI Labs</span>
           </div>
           <div className="flex items-center gap-5 text-xs uppercase tracking-[0.35em] text-slate-500 dark:text-slate-400">
             <Link
